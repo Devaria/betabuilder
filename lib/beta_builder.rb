@@ -155,6 +155,7 @@ module BetaBuilder
         desc "Build the beta release of the app"
         task :build => :clean do
           print "Building Project..."
+          @configuration.provisioning_profile = File.expand_path(@configuration.provisioning_profile)
           xcodebuild @configuration.build_arguments, "build"
           raise "** BUILD FAILED **" if BuildOutputParser.new(File.read("build.output")).failed?
           puts "Done"
