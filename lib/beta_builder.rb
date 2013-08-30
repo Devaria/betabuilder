@@ -70,6 +70,9 @@ module BetaBuilder
         args << "VERSION_LONG='#{build_number_git}'" if set_version_number_git
         args << "VERSION_LONG='build-#{build_number_svn}'" if set_version_number_svn
         
+        args << "PROVISIONING_PROFILE='#{provisioning_profile}'"
+        args << "CODE_SIGN_IDENTITY='#{signing_identity}'"
+        
         if xcodeargs
             args.concat xcodeargs if xcodeargs.is_a? Array
             args << "#{xcodeargs}" if xcodears.is_a? String
@@ -162,8 +165,9 @@ module BetaBuilder
         desc "Build the beta release of the app"
         task :build => :clean do
           print "Building Project..."
-          if @configuration.provisioning_profile
-            @configuration.provisioning_profile = File.expand_path(@configuration.provisioning_profile)
+          if @configuration.provisioning_profile and not @configuration.provisioning_profile_path
+            @configuration.provisioning_profile_path = "~/Library/MobileDevice/Provisioning Profiles/" + @configuration.provisioning_profile + ".mobileprovision"
+            @configuration.provisioning_profile_path = File.expand_path(@configuration.provisioning_profile_path)
           end
           xcodebuild @configuration.build_arguments, "build"
           raise "** BUILD FAILED **" if BuildOutputParser.new(File.read("build.output")).failed?
@@ -187,7 +191,7 @@ module BetaBuilder
           cmd << "-v '#{@configuration.built_app_path}'"
           cmd << "-o '#{@configuration.ipa_path}'"
           cmd << "--sign '#{@configuration.signing_identity}'"
-          cmd << "--embed '#{@configuration.provisioning_profile}'"
+          cmd << "--embed '#{@configuration.provisioning_profile_path}'"
           if @configuration.packageargs
             cmd.concat @configuration.packageargs if @configuration.packageargs.is_a? Array
             cmd << @configuration.packageargs if @configuration.packageargs.is_a? String
