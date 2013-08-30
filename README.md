@@ -101,6 +101,13 @@ A full list of configuration options and their details
 
 `set_version_number_svn` - (true/**false**) Attempts to set a version number using SVN, see below
 
+`provisioning_profile` - (String) The name of the provisioning profile xCode should use.
+
+`provisioning_profile_path` - (File Path) The path to the provisioning profile, if the is not located in the usual location.
+
+`signing_identity` - (String) The name of the code signing identity xCode should use.
+
+
 ### Configuration (Testflight)
 Testflight presents its own set of options that can be configured
 
