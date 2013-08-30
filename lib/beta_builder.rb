@@ -29,6 +29,7 @@ module BetaBuilder
         :verbose => ENV.fetch('VERBOSE', false),
         :dry_run => ENV.fetch('DRY', false),
         :set_version_number => false,
+        :sdk => "iphoneos",
         :set_version_number_git => false,
         :set_version_number_svn => false
       )
@@ -61,10 +62,11 @@ module BetaBuilder
           args << "-scheme '#{scheme}'"
         else
           args << "-target '#{target}'"
-          args << "-sdk iphoneos"
           args << "-project '#{project_file_path}'" if project_file_path
         end
         
+        args << "-sdk #{sdk}"
+         
         args << "-configuration '#{configuration}'"
         args << "-arch '#{arch}'" unless arch.nil?
         args << "VERSION_LONG='#{build_number_git}'" if set_version_number_git
@@ -181,7 +183,6 @@ module BetaBuilder
           end
           print "Packaging and Signing..."          
           raise "** PACKAGE FAILED ** No Signing Identity Found" unless @configuration.signing_identity
-          raise "** PACKAGE FAILED ** No Provisioning Profile Found" unless @configuration.provisioning_profile
           
           # Construct the IPA and Sign it
           cmd = []
@@ -191,7 +192,9 @@ module BetaBuilder
           cmd << "-v '#{@configuration.built_app_path}'"
           cmd << "-o '#{@configuration.ipa_path}'"
           cmd << "--sign '#{@configuration.signing_identity}'"
-          cmd << "--embed '#{@configuration.provisioning_profile_path}'"
+          if @configuration.provisioning_profile_path
+            cmd << "--embed '#{@configuration.provisioning_profile_path}'"
+          end
           if @configuration.packageargs
             cmd.concat @configuration.packageargs if @configuration.packageargs.is_a? Array
             cmd << @configuration.packageargs if @configuration.packageargs.is_a? String
