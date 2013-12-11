@@ -32,7 +32,7 @@ module BetaBuilder
     end
     
     def archive_file_name
-      "#{@configuration.archive_name} #{Time.now.strftime('%Y-%m-%d %H.%M')}.xcarchive"
+      "#{@configuration.archive_name} #{Time.now.strftime('%Y-%m-%d %H.%M.%S')}.xcarchive"
     end
     
     def archive_path_within(path)
@@ -76,7 +76,7 @@ module BetaBuilder
           "ApplicationPath"             => File.join("Applications", @configuration.app_file_name),
           "CFBundleIdentifier"          => metadata["CFBundleIdentifier"], 
           "CFBundleShortVersionString"  => version, 
-          "IconPaths"                   => metadata["CFBundleIcons"]["CFBundlePrimaryIcon"]["CFBundleIconFiles"].map { |file| File.join("Applications", @configuration.app_file_name, file) }
+          "IconPaths"                   => metadata["CFBundleIcons"]["CFBundlePrimaryIcon"]["CFBundleIconFiles"].map { |file| File.join("Applications", @configuration.app_file_name, file, "@2x.png") }
         }, 
         "ArchiveVersion" => 1.0, 
         "Comment"        => @configuration.release_notes_text,
